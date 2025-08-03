@@ -6,6 +6,7 @@ import { useLogin } from '@/modules/auth/Login/hooks/useLogin';
 import type { LoginResponse } from '@/modules/auth/Login/types';
 import { useSignUp } from '@/modules/auth/SignUp/hooks/useSignUp';
 import type { SignUpResponse } from '@/modules/auth/SignUp/types';
+import { useGetUserProfile } from '@/shared/hooks/useGetUserProfile';
 
 export const useAuthManager = (): UseAuthManagerReturn => {
 	const [user, setUser] = useState<User | null>(null);
@@ -20,7 +21,16 @@ export const useAuthManager = (): UseAuthManagerReturn => {
 		onError: onSignUpError,
 	});
 
-	const isUserLoading = isLoginLoading || isSignUpLoading;
+	const { isLoading: isUserProfileLoading } = useGetUserProfile({
+		onSuccess: onLoadUserProfileSuccess,
+		enabled: !!localStorage.getItem(StorageKeys.TOKEN) && !user,
+	});
+
+	const isUserLoading: boolean = isLoginLoading || isSignUpLoading || isUserProfileLoading;
+
+	async function handleLogin(email: string, password: string): Promise<void> {
+		await loginMutation({ email, password });
+	}
 
 	function onLoginSuccess(data: LoginResponse): void {
 		localStorage.setItem(StorageKeys.TOKEN, data.token);
@@ -29,6 +39,10 @@ export const useAuthManager = (): UseAuthManagerReturn => {
 
 	function onLoginError(error: unknown): void {
 		alert(error);
+	}
+
+	async function handleSignUp(email: string, password: string, confirmPassword: string): Promise<void> {
+		await signUpMutation({ email, password, confirmPassword });
 	}
 
 	function onSignUpSuccess(data: SignUpResponse): void {
@@ -40,12 +54,8 @@ export const useAuthManager = (): UseAuthManagerReturn => {
 		alert(error);
 	}
 
-	async function handleLogin(email: string, password: string): Promise<void> {
-		await loginMutation({ email, password });
-	}
-
-	async function handleSignUp(email: string, password: string, confirmPassword: string): Promise<void> {
-		await signUpMutation({ email, password, confirmPassword });
+	function onLoadUserProfileSuccess(data: User): void {
+		setUser(data);
 	}
 
 	function handleLogout(): void {

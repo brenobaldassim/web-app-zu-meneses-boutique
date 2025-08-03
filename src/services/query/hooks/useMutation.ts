@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import type { UseMutationOptions, UseMutationResult } from '../types';
 
 export function useMutation<T, TVariables, TContext = unknown>({
@@ -53,6 +53,13 @@ export function useMutation<T, TVariables, TContext = unknown>({
 		},
 		[mutationFn, onMutate, onSuccess, onError, onSettled],
 	);
+
+	useEffect(() => {
+		isMounted.current = true;
+		return () => {
+			isMounted.current = false;
+		};
+	}, []);
 
 	return {
 		mutateAsync,
