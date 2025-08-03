@@ -1,20 +1,21 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { QueryCache, UseQueryOptions, UseQueryResult } from '../types';
-
-const cache: QueryCache = new Map();
+import type { UseQueryOptions, UseQueryResult } from '../types';
+import { queryClient } from '../queryClient';
 
 export function useQuery<T>({
 	queryKey,
 	queryFn,
 	enabled = true,
+	staleTime = 0,
 	onSuccess,
 	onError,
 	onSettled,
 }: UseQueryOptions<T>): UseQueryResult<T> {
-	const [data, setData] = useState<T | undefined>(() => cache.get(queryKey) as T | undefined);
+	const [data, setData] = useState<T | undefined>(() => queryClient.getQueryData<T>(queryKey));
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [isError, setIsError] = useState<boolean>(false);
 	const [error, setError] = useState<unknown>(null);
+	const [isStale, setIsStale] = useState<boolean>(() => queryClient.isStale(queryKey));
 	const isMounted = useRef<boolean>(true);
 
 	const refetch = useCallback(async () => {
@@ -22,10 +23,13 @@ export function useQuery<T>({
 			setIsLoading(true);
 			setIsError(false);
 			setError(null);
+
 			const result = await queryFn();
-			cache.set(queryKey, result);
+			queryClient.setQueryData(queryKey, result, staleTime);
+
 			if (isMounted.current) {
 				setData(result);
+				setIsStale(false);
 				onSuccess?.(result);
 				onSettled?.(result, null, queryKey);
 			}
@@ -41,12 +45,21 @@ export function useQuery<T>({
 				setIsLoading(false);
 			}
 		}
-	}, [queryKey, queryFn, onSuccess, onError, onSettled]);
+	}, [queryKey, staleTime, queryFn, onSuccess, onError, onSettled]);
 
 	useEffect(() => {
 		isMounted.current = true;
-		if (enabled && !cache.has(queryKey)) {
-			void refetch();
+
+		const cachedData = queryClient.getQueryData<T>(queryKey);
+		const isDataStale = queryClient.isStale(queryKey);
+		setIsStale(isDataStale);
+
+		if (enabled) {
+			if (!cachedData || isDataStale) {
+				void refetch();
+			} else {
+				setData(cachedData);
+			}
 		}
 		return () => {
 			isMounted.current = false;
@@ -55,6 +68,7 @@ export function useQuery<T>({
 
 	return {
 		data,
+		isStale,
 		isLoading,
 		isError,
 		error,

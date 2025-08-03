@@ -1,4 +1,19 @@
-export type QueryCache = Map<string, unknown>;
+export type CacheEntry<T = unknown> = {
+	data: T;
+	timestamp: number;
+	staleTime: number;
+};
+
+export type QueryCache = Map<string, CacheEntry>;
+
+export type QueryClientMethods = {
+	clear: () => void;
+	invalidateQueries: (queryKey?: string) => void;
+	getQueryData: <T>(queryKey: string) => T | undefined;
+	setQueryData: <T>(queryKey: string, data: T, staleTime?: number) => void;
+	removeQueries: (queryKey?: string) => void;
+	prefetchQuery: <T>(queryKey: string, queryFn: () => Promise<T>, staleTime?: number) => Promise<void>;
+};
 
 export type UseQueryOptions<T> = {
 	queryKey: string;
@@ -7,6 +22,8 @@ export type UseQueryOptions<T> = {
 	onError?: (error: unknown) => void;
 	onSettled?: (data: T | null, error: unknown, queryKey: string) => void;
 	enabled?: boolean;
+	staleTime?: number;
+	cacheTime?: number;
 };
 
 export type UseQueryResult<T> = {
@@ -15,6 +32,7 @@ export type UseQueryResult<T> = {
 	isError: boolean;
 	error: unknown;
 	refetch: () => Promise<void>;
+	isStale: boolean;
 };
 
 export type MutationFunction<T, TVariables> = (variables: TVariables) => Promise<T>;
