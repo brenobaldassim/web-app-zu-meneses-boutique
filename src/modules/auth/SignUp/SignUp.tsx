@@ -41,11 +41,11 @@ export function SignUp() {
 	}
 
 	return (
-		<div className='flex flex-col items-center justify-center h-screen '>
+		<div className='flex flex-col items-center justify-center'>
 			<form
 				id='signup-form'
 				action={formAction}
-				className='flex flex-col items-center justify-center h-120  w-90 md:w-120 p-4 gap-4 '
+				className='flex flex-col items-center justify-center h-90 w-90 md:w-120 p-4 gap-4 '
 			>
 				<h1 className='text-2xl font-bold text-primary-contrast flex items-center gap-2'>
 					<UserPlusIcon className='text-primary-contrast' strokeWidth={3} size={28} /> Criar Conta
