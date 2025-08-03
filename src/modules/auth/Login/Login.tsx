@@ -57,7 +57,7 @@ export function Login() {
 					error={passwordError}
 					defaultValue={form.data?.password}
 				/>
-				<FormSubmitButton disabled={pending || isUserLoading} loading={isUserLoading} />
+				<FormSubmitButton label='Login' disabled={pending || isUserLoading} loading={isUserLoading} />
 			</form>
 		</div>
 	);

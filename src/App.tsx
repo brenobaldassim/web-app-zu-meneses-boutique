@@ -1,6 +1,6 @@
 import './App.css';
 import { Route, Routes } from 'react-router';
-import { Login } from './modules/auth/Login';
+import { AuthWrapper } from './modules/auth/AuthWrapper';
 import { useAuth } from './providers/AuthProvider/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 
@@ -20,7 +20,7 @@ function App() {
 	if (!user) {
 		return (
 			<div className='bg-tertiary'>
-				<Login />
+				<AuthWrapper />
 			</div>
 		);
 	}

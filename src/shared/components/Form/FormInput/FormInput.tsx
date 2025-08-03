@@ -37,7 +37,7 @@ export function FormInput({ type, name, placeholder, error, defaultValue }: Form
 					</button>
 				)}
 			</div>
-			{error && <p className='text-alert text-xs'>*{error}</p>}
+			{error && <p className='text-alert text-xs ml-2'>*{error}</p>}
 		</div>
 	);
 }
