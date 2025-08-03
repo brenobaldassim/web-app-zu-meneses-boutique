@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+
+@layer base {
+	html {
+		font-family: 'Roboto', sans-serif;
+	}
+}
+
+@theme {
+	--color-primary: #252525;
+	--color-primary-contrast: #ffffff;
+	--color-secondary: #313131;
+	--color-tertiary: #1a1a18;
+	--color-alert: #cd2b4d;
+}
+
+input:focus {
+	outline: none !important;
+}
