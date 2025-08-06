@@ -7,6 +7,7 @@ import type { LoginResponse } from '@/modules/auth/Login/types';
 import { useSignUp } from '@/modules/auth/SignUp/hooks/useSignUp';
 import type { SignUpResponse } from '@/modules/auth/SignUp/types';
 import { useGetUserProfile } from '@/shared/hooks/useGetUserProfile';
+import { AxiosError } from 'axios';
 
 export const useAuthManager = (): UseAuthManagerReturn => {
 	const [user, setUser] = useState<User | null>(null);
@@ -23,6 +24,7 @@ export const useAuthManager = (): UseAuthManagerReturn => {
 
 	const { isLoading: isUserProfileLoading } = useGetUserProfile({
 		onSuccess: onLoadUserProfileSuccess,
+		onError: onLoadUserProfileError,
 		enabled: !!localStorage.getItem(StorageKeys.TOKEN) && !user,
 	});
 
@@ -56,6 +58,12 @@ export const useAuthManager = (): UseAuthManagerReturn => {
 
 	function onLoadUserProfileSuccess(data: User): void {
 		setUser(data);
+	}
+
+	function onLoadUserProfileError(error: unknown): void {
+		if (error instanceof AxiosError && error.response?.status === 401) {
+			handleLogout();
+		}
 	}
 
 	function handleLogout(): void {
