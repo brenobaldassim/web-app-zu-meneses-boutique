@@ -17,9 +17,15 @@ export function useQuery<T>({
 	const [error, setError] = useState<unknown>(null);
 	const [isStale, setIsStale] = useState<boolean>(() => queryClient.isStale(queryKey));
 	const isMounted = useRef<boolean>(true);
+	const isFetching = useRef<boolean>(false);
 
 	const refetch = useCallback(async () => {
+		if (isFetching.current) {
+			return;
+		}
+
 		try {
+			isFetching.current = true;
 			setIsLoading(true);
 			setIsError(false);
 			setError(null);
@@ -42,6 +48,7 @@ export function useQuery<T>({
 			}
 		} finally {
 			if (isMounted.current) {
+				isFetching.current = false;
 				setIsLoading(false);
 			}
 		}

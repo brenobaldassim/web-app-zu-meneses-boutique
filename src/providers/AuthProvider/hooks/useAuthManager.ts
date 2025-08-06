@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { User } from '@/@types/User';
 import type { UseAuthManagerReturn } from '../types';
-import { StorageKeys } from '@/constants';
+import { StorageKeys } from '@/shared/constants';
 import { useLogin } from '@/modules/auth/Login/hooks/useLogin';
 import type { LoginResponse } from '@/modules/auth/Login/types';
 import { useSignUp } from '@/modules/auth/SignUp/hooks/useSignUp';

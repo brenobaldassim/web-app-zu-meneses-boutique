@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { env } from '@/config/env';
-import { StorageKeys } from '@/constants';
+import { StorageKeys } from '@/shared/constants';
 
 export const api = axios.create({
 	baseURL: env.API_URL,
