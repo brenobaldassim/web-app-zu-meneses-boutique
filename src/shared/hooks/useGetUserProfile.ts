@@ -3,10 +3,11 @@ import { api } from '@/services/api';
 import { useQuery } from '@/services/query/hooks/useQuery';
 import type { UseQueryResult } from '@/services/query/types';
 import { getMinutesInMs } from '../utils/getMinutesInMs';
+import type { AxiosError } from 'axios';
 
 interface UseGetUserProfileProps {
 	onSuccess: (data: User) => void;
-	onError?: (error: unknown) => void;
+	onError?: (error: AxiosError) => void;
 	enabled?: boolean;
 }
 
@@ -14,7 +15,7 @@ export const useGetUserProfile = ({
 	onSuccess,
 	onError,
 	enabled = true,
-}: UseGetUserProfileProps): UseQueryResult<User> => {
+}: UseGetUserProfileProps): UseQueryResult<User, AxiosError> => {
 	return useQuery({
 		queryKey: 'user-profile',
 		queryFn: async () => {

@@ -8,6 +8,8 @@ import { useSignUp } from '@/modules/auth/SignUp/hooks/useSignUp';
 import type { SignUpResponse } from '@/modules/auth/SignUp/types';
 import { useGetUserProfile } from '@/shared/hooks/useGetUserProfile';
 import { AxiosError } from 'axios';
+import toast from 'react-hot-toast';
+import { getErrorData } from '@/shared/utils/getErrorData';
 
 export const useAuthManager = (): UseAuthManagerReturn => {
 	const [user, setUser] = useState<User | null>(null);
@@ -39,8 +41,9 @@ export const useAuthManager = (): UseAuthManagerReturn => {
 		setUser(data.user);
 	}
 
-	function onLoginError(error: unknown): void {
-		alert(error);
+	function onLoginError(error: AxiosError): void {
+		const { message } = getErrorData(error.response);
+		toast.error(message);
 	}
 
 	async function handleSignUp(email: string, password: string, confirmPassword: string): Promise<void> {
@@ -52,17 +55,20 @@ export const useAuthManager = (): UseAuthManagerReturn => {
 		setUser(data.user);
 	}
 
-	function onSignUpError(error: unknown): void {
-		alert(error);
+	function onSignUpError(error: AxiosError): void {
+		const { message } = getErrorData(error.response);
+		toast.error(message);
 	}
 
 	function onLoadUserProfileSuccess(data: User): void {
 		setUser(data);
 	}
 
-	function onLoadUserProfileError(error: unknown): void {
-		if (error instanceof AxiosError && error.response?.status === 401) {
+	function onLoadUserProfileError(error: AxiosError): void {
+		const { statusCorde } = getErrorData(error.response);
+		if (statusCorde === 401) {
 			handleLogout();
+			toast.error('Session expired, please login again');
 		}
 	}
 

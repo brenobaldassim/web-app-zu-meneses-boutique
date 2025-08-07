@@ -1,10 +1,11 @@
 import { useMutation } from '@/services/query/hooks/useMutation';
 import type { LoginFormData, LoginResponse } from '../types';
 import { api } from '@/services/api';
+import type { AxiosError } from 'axios';
 
 interface UseLoginProps {
 	onSuccess: (data: LoginResponse) => void;
-	onError: (error: unknown, variables: LoginFormData, context: unknown) => void;
+	onError: (error: AxiosError, variables: LoginFormData, context: unknown) => void;
 }
 
 export const useLogin = ({ onSuccess, onError }: UseLoginProps) => {

@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router';
 import { AuthWrapper } from './modules/auth/AuthWrapper';
 import { useAuth } from './providers/AuthProvider/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
 	const { user, isUserLoading } = useAuth();
@@ -12,6 +13,7 @@ function App() {
 			<div className='bg-tertiary'>
 				<div className='flex items-center justify-center h-screen'>
 					<Loader2 size={40} className='animate-spin text-primary-contrast' />
+					<Toaster />
 				</div>
 			</div>
 		);
@@ -21,6 +23,7 @@ function App() {
 		return (
 			<div className='bg-tertiary'>
 				<AuthWrapper />
+				<Toaster />
 			</div>
 		);
 	}
@@ -37,6 +40,7 @@ function App() {
 					}
 				/>
 			</Routes>
+			<Toaster />
 		</div>
 	);
 }

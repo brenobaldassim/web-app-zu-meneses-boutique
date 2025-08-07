@@ -15,40 +15,40 @@ export type QueryClientMethods = {
 	prefetchQuery: <T>(queryKey: string, queryFn: () => Promise<T>, staleTime?: number) => Promise<void>;
 };
 
-export type UseQueryOptions<T> = {
+export type UseQueryOptions<T, TError> = {
 	queryKey: string;
 	queryFn: () => Promise<T>;
 	onSuccess?: (data: T) => void;
-	onError?: (error: unknown) => void;
+	onError?: (error: TError) => void;
 	onSettled?: (data: T | null, error: unknown, queryKey: string) => void;
 	enabled?: boolean;
 	staleTime?: number;
 	cacheTime?: number;
 };
 
-export type UseQueryResult<T> = {
+export type UseQueryResult<T, TError> = {
 	data: T | undefined;
 	isLoading: boolean;
 	isError: boolean;
-	error: unknown;
+	error: TError | null;
 	refetch: () => Promise<void>;
 	isStale: boolean;
 };
 
 export type MutationFunction<T, TVariables> = (variables: TVariables) => Promise<T>;
 
-export type UseMutationOptions<T, TVariables, TContext = unknown> = {
+export type UseMutationOptions<T, TVariables, TError, TContext = unknown> = {
 	mutationFn: MutationFunction<T, TVariables>;
 	onMutate?: (variables: TVariables) => Promise<TContext> | TContext;
 	onSuccess?: (data: T, variables: TVariables, context: TContext | undefined) => void;
-	onError?: (error: unknown, variables: TVariables, context: TContext | undefined) => void;
+	onError?: (error: TError, variables: TVariables, context: TContext | undefined) => void;
 	onSettled?: (data: T | null, error: unknown, variables: TVariables, context: TContext | undefined) => void;
 };
 
-export type UseMutationResult<T, TVariables> = {
+export type UseMutationResult<T, TVariables, TError> = {
 	mutateAsync: (variables: TVariables) => Promise<void>;
 	data: T | null;
-	error: unknown;
+	error: TError | null;
 	isPending: boolean;
 	isSuccess: boolean;
 	isError: boolean;

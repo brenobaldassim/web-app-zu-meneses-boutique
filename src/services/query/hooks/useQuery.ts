@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import type { UseQueryOptions, UseQueryResult } from '../types';
 import { queryClient } from '../queryClient';
 
-export function useQuery<T>({
+export function useQuery<T, TError>({
 	queryKey,
 	queryFn,
 	enabled = true,
@@ -10,11 +10,11 @@ export function useQuery<T>({
 	onSuccess,
 	onError,
 	onSettled,
-}: UseQueryOptions<T>): UseQueryResult<T> {
+}: UseQueryOptions<T, TError>): UseQueryResult<T, TError> {
 	const [data, setData] = useState<T | undefined>(() => queryClient.getQueryData<T>(queryKey));
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [isError, setIsError] = useState<boolean>(false);
-	const [error, setError] = useState<unknown>(null);
+	const [error, setError] = useState<TError | null>(null);
 	const [isStale, setIsStale] = useState<boolean>(() => queryClient.isStale(queryKey));
 	const isMounted = useRef<boolean>(true);
 	const isFetching = useRef<boolean>(false);
@@ -39,11 +39,11 @@ export function useQuery<T>({
 				onSuccess?.(result);
 				onSettled?.(result, null, queryKey);
 			}
-		} catch (err) {
+		} catch (err: unknown) {
 			if (isMounted.current) {
 				setIsError(true);
-				setError(err);
-				onError?.(err);
+				setError(err as TError);
+				onError?.(err as TError);
 				onSettled?.(null, err, queryKey);
 			}
 		} finally {

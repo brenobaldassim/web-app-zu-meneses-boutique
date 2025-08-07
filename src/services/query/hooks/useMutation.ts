@@ -1,17 +1,17 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import type { UseMutationOptions, UseMutationResult } from '../types';
 
-export function useMutation<T, TVariables, TContext = unknown>({
+export function useMutation<T, TVariables, TError, TContext = unknown>({
 	mutationFn,
 	onMutate,
 	onSuccess,
 	onError,
 	onSettled,
-}: UseMutationOptions<T, TVariables, TContext>): UseMutationResult<T, TVariables> {
+}: UseMutationOptions<T, TVariables, TError, TContext>): UseMutationResult<T, TVariables, TError> {
 	const [isPending, setIsPending] = useState<boolean>(false);
 	const [isSuccess, setIsSuccess] = useState<boolean>(false);
 	const [isError, setIsError] = useState<boolean>(false);
-	const [error, setError] = useState<unknown>(null);
+	const [error, setError] = useState<TError | null>(null);
 	const [data, setData] = useState<T | null>(null);
 	const isMounted = useRef<boolean>(true);
 
@@ -41,8 +41,8 @@ export function useMutation<T, TVariables, TContext = unknown>({
 			} catch (err) {
 				if (isMounted.current) {
 					setIsError(true);
-					setError(err);
-					onError?.(err, variables, context);
+					setError(err as TError);
+					onError?.(err as TError, variables, context);
 					onSettled?.(null, err, variables, context);
 				}
 			} finally {

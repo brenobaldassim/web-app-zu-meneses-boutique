@@ -1,10 +1,11 @@
 import { useMutation } from '@/services/query/hooks/useMutation';
 import type { SignUpFormData, SignUpResponse } from '../types';
 import { api } from '@/services/api';
+import type { AxiosError } from 'axios';
 
 interface UseSignUpProps {
 	onSuccess: (data: SignUpResponse) => void;
-	onError: (error: unknown, variables: SignUpFormData, context: unknown) => void;
+	onError: (error: AxiosError, variables: SignUpFormData, context: unknown) => void;
 }
 
 export const useSignUp = ({ onSuccess, onError }: UseSignUpProps) => {
