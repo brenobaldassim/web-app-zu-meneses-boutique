@@ -9,18 +9,18 @@ import { TOAST_OPTIONS } from './shared/constants';
 function App() {
 	const { user, isUserLoading } = useAuth();
 
-	if (isUserLoading) {
-		return (
-			<div className='bg-tertiary'>
-				<div className='flex items-center justify-center h-screen'>
-					<Loader2 size={40} className='animate-spin text-primary-contrast' />
-					<Toaster toastOptions={TOAST_OPTIONS} />
-				</div>
-			</div>
-		);
-	}
-
 	if (!user) {
+		if (isUserLoading) {
+			return (
+				<div className='bg-tertiary'>
+					<div className='flex items-center justify-center h-screen'>
+						<Loader2 size={40} className='animate-spin text-primary-contrast' />
+						<Toaster toastOptions={TOAST_OPTIONS} />
+					</div>
+				</div>
+			);
+		}
+
 		return (
 			<div className='bg-tertiary'>
 				<AuthWrapper />

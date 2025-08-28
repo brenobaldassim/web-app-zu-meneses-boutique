@@ -10,9 +10,14 @@ import { useGetUserProfile } from '@/shared/hooks/useGetUserProfile';
 import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
 import { getErrorData } from '@/shared/utils/getErrorData';
+import { useNavigate } from 'react-router';
 
 export const useAuthManager = (): UseAuthManagerReturn => {
 	const [user, setUser] = useState<User | null>(null);
+	const navigate = useNavigate();
+	const asyncNavigate = async () => {
+		await navigate('/');
+	};
 
 	const { mutateAsync: loginMutation, isPending: isLoginLoading } = useLogin({
 		onSuccess: onLoginSuccess,
@@ -27,7 +32,7 @@ export const useAuthManager = (): UseAuthManagerReturn => {
 	const { isLoading: isUserProfileLoading } = useGetUserProfile({
 		onSuccess: onLoadUserProfileSuccess,
 		onError: onLoadUserProfileError,
-		enabled: !!localStorage.getItem(StorageKeys.TOKEN) && !user,
+		enabled: !!localStorage.getItem(StorageKeys.TOKEN) && !user && !isLoginLoading && !isSignUpLoading,
 	});
 
 	const isUserLoading: boolean = isLoginLoading || isSignUpLoading || isUserProfileLoading;
@@ -39,6 +44,9 @@ export const useAuthManager = (): UseAuthManagerReturn => {
 	function onLoginSuccess(data: LoginResponse): void {
 		localStorage.setItem(StorageKeys.TOKEN, data.token);
 		setUser(data.user);
+		asyncNavigate().catch((error) => {
+			console.error(error);
+		});
 	}
 
 	function onLoginError(error: AxiosError): void {
@@ -53,6 +61,9 @@ export const useAuthManager = (): UseAuthManagerReturn => {
 	function onSignUpSuccess(data: SignUpResponse): void {
 		localStorage.setItem(StorageKeys.TOKEN, data.token);
 		setUser(data.user);
+		asyncNavigate().catch((error) => {
+			console.error(error);
+		});
 	}
 
 	function onSignUpError(error: AxiosError): void {
@@ -65,11 +76,11 @@ export const useAuthManager = (): UseAuthManagerReturn => {
 	}
 
 	function onLoadUserProfileError(error: AxiosError): void {
-		const { statusCorde } = getErrorData(error.response);
-		if (statusCorde === 401) {
+		const { message } = getErrorData(error.response);
+		if (error.response?.status === 401) {
 			handleLogout();
-			toast.error('Session expired, please login again');
 		}
+		toast.error(message);
 	}
 
 	function handleLogout(): void {
